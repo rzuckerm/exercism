@@ -5,7 +5,6 @@ const QUEEN: u8 = 12;
 const KING: u8 = 13;
 const ACE: u8 = 14;
 
-const ONE_OF_KIND_IDX: usize = 0;
 const TWO_OF_KIND_IDX: usize = 1;
 const THREE_OF_KIND_IDX: usize = 2;
 const FOUR_OF_KIND_IDX: usize = 3;
@@ -76,84 +75,40 @@ fn parse_card(s: &str) -> Card {
 }
 
 fn get_hand_value(hand: &Hand) -> HandValue {
-    let card_values: Vec<u8> = hand.iter().map(|card| card.value).collect();
+    let mut card_values: Vec<u8> = hand.iter().map(|card| card.value).collect();
+    if card_values == [ACE, 5, 4, 3, 2] {
+        card_values = vec![5, 4, 3, 2, 1]
+    };
     let rank: Rank;
-    let tie_breaker: Vec<u8>;
     let card_dist = get_card_distribution(&card_values);
+    let tie_breaker: Vec<u8> = card_dist
+        .iter()
+        .rev()
+        .fold(Vec::<u8>::new(), |mut acc, val| {
+            acc.extend(val);
+            acc
+        });
     if !card_dist[FIVE_OF_KIND_IDX].is_empty() {
-        // 5-of-a-kind (possible with 2 decks): Use quintuplet as tie-breaker
-        rank = Rank::FiveOfKind;
-        tie_breaker = vec![card_values[0]];
+        rank = Rank::FiveOfKind
     } else if !card_dist[FOUR_OF_KIND_IDX].is_empty() {
-        // 4-of-a-kind: use quadruplet then kicker as tie-breaker
-        rank = Rank::FourOfKind;
-        tie_breaker = vec![
-            card_dist[FOUR_OF_KIND_IDX][0],
-            card_dist[ONE_OF_KIND_IDX][0],
-        ]
+        rank = Rank::FourOfKind
     } else {
         let flush = hand[1..].iter().all(|card| card.suit == hand[0].suit);
-        let ace_low_straight = card_values == vec![ACE, 5, 4, 3, 2];
-        let high_card = if ace_low_straight { 5 } else { card_values[0] };
         let straight = card_values.windows(2).all(|w| w[0] == w[1] + 1);
-        (rank, tie_breaker) = match (flush, straight || ace_low_straight) {
-            // Straight flush: use high card as tie-breaker
-            (true, true) => (Rank::StraightFlush, vec![high_card]),
-
-            // Flush: use kickers from highest to lowest as tie-breaker
-            (true, false) => (Rank::Flush, card_values.clone()),
-
-            // Straight: use high card as tie-breaker
-            (false, true) => (Rank::Straight, vec![high_card]),
-
+        rank = match (flush, straight) {
+            (true, true) => Rank::StraightFlush,
+            (true, false) => Rank::Flush,
+            (false, true) => Rank::Straight,
             (false, false) => {
-                // 3-of-a-kind, 2-of-a-kind
                 match (
                     card_dist[THREE_OF_KIND_IDX].len(),
                     card_dist[TWO_OF_KIND_IDX].len(),
                 ) {
-                    // Full house: use triplet, then pair as tie-breaker
-                    (1, 1) => (
-                        Rank::FullHouse,
-                        vec![
-                            card_dist[THREE_OF_KIND_IDX][0],
-                            card_dist[TWO_OF_KIND_IDX][0],
-                        ],
-                    ),
-
-                    // 3-of-a-kind: use triplet, then high kicker, then low kicker as tie-breaker
-                    (1, 0) => (
-                        Rank::ThreeOfKind,
-                        vec![
-                            card_dist[THREE_OF_KIND_IDX][0],
-                            card_dist[ONE_OF_KIND_IDX][0],
-                            card_dist[ONE_OF_KIND_IDX][1],
-                        ],
-                    ),
-
-                    // 2 pair: use high pair, then low pair, then kicker as tie-breaker
-                    (0, 2) => (
-                        Rank::TwoPair,
-                        vec![
-                            card_dist[TWO_OF_KIND_IDX][0],
-                            card_dist[TWO_OF_KIND_IDX][1],
-                            card_dist[ONE_OF_KIND_IDX][0],
-                        ],
-                    ),
-
-                    // 1 pair: use pair, then remaining kickers from highest to lowest as tie-breaker
-                    (0, 1) => (
-                        Rank::OnePair,
-                        vec![
-                            card_dist[TWO_OF_KIND_IDX][0],
-                            card_dist[ONE_OF_KIND_IDX][0],
-                            card_dist[ONE_OF_KIND_IDX][1],
-                            card_dist[ONE_OF_KIND_IDX][2],
-                        ],
-                    ),
-
-                    // High card: Use kickers from highest to lowest as tie-breaker
-                    (_, _) => (Rank::HighCard, card_values.clone()),
+                    (1, 1) => Rank::FullHouse,
+                    (1, 0) => Rank::ThreeOfKind,
+                    (0, 2) => Rank::TwoPair,
+                    (0, 1) => Rank::OnePair,
+                    (_, _) => Rank::HighCard,
                 }
             }
         }
