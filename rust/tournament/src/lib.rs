@@ -1,65 +1,38 @@
-use std::cmp::Ordering;
 use std::collections::HashMap;
 
-#[derive(Default, Clone, Copy)]
-struct TeamStats {
-    wins: u32,
-    draws: u32,
-    losses: u32,
-}
-
-fn get_score(stats: &TeamStats) -> u32 {
-    3 * stats.wins + stats.draws
-}
-
 pub fn tally(match_results: &str) -> String {
-    let mut stats_map: HashMap<String, TeamStats> = HashMap::new();
+    let mut stats_map: HashMap<String, Vec<i32>> = HashMap::new();
     for line in match_results.lines() {
-        let v: Vec<&str> = line.splitn(3, ';').collect();
-        let [name1, name2, outcome] = <[&str; 3]>::try_from(v).ok().unwrap();
-        match outcome {
-            "win" => {
-                update_stat(&mut stats_map, name1, |stat| stat.wins += 1);
-                update_stat(&mut stats_map, name2, |stat| stat.losses += 1);
-            }
-            "loss" => {
-                update_stat(&mut stats_map, name1, |stat| stat.losses += 1);
-                update_stat(&mut stats_map, name2, |stat| stat.wins += 1);
-            }
-            _ => {
-                update_stat(&mut stats_map, name1, |stat| stat.draws += 1);
-                update_stat(&mut stats_map, name2, |stat| stat.draws += 1);
-            }
+        let mut iter = line.split(';');
+        if let (Some(name1), Some(name2), Some(outcome)) = (iter.next(), iter.next(), iter.next()) {
+            let (index1, index2): (usize, usize) = match outcome {
+                "win" => (1, 3),  // team 1 win, team 2 loss
+                "loss" => (3, 1), // team 2 win, team 1 loss
+                _ => (2, 2),      // team 1 draw, team 2 draw
+            };
+            update_stat(&mut stats_map, name1, index1);
+            update_stat(&mut stats_map, name2, index2);
         }
     }
 
-    let mut stats: Vec<(String, TeamStats)> = stats_map.into_iter().collect();
-    stats.sort_by(
-        |(name1, stat1), (name2, stat2)| match get_score(stat2).cmp(&get_score(stat1)) {
-            Ordering::Equal => name1.cmp(name2),
-            x => x,
-        },
-    );
+    let mut stats: Vec<(String, Vec<i32>)> = stats_map.into_iter().collect();
+    stats.sort_by_key(|(name, stat)| (-stat[4], name.to_owned()));
     stats.iter().fold(
-        format!(
-            "{:30} | {:>2} | {:>2} | {:>2} | {:>2} | {:>2}",
-            "Team", "MP", "W", "D", "L", "P"
-        ),
+        "Team                           | MP |  W |  D |  L |  P".to_owned(),
         |acc, (name, stat)| {
             acc + &format!(
-                "\n{:30} | {:>2} | {:>2} | {:>2} | {:>2} | {:>2}",
-                name,
-                stat.wins + stat.losses + stat.draws,
-                stat.wins,
-                stat.draws,
-                stat.losses,
-                get_score(stat)
+                "\n{:30} | {:2} | {:2} | {:2} | {:2} | {:2}",
+                name, stat[0], stat[1], stat[2], stat[3], stat[4],
             )
         },
     )
 }
 
-fn update_stat(stats_map: &mut HashMap<String, TeamStats>, name: &str, f: fn(&mut TeamStats)) {
-    stats_map.entry(name.to_owned().to_string()).or_default();
-    stats_map.entry(name.to_owned().to_string()).and_modify(f);
+fn update_stat(stats_map: &mut HashMap<String, Vec<i32>>, name: &str, index: usize) {
+    let entry = stats_map
+        .entry(name.to_owned().to_string())
+        .or_insert(vec![0, 0, 0, 0, 0]);
+    entry[index] += 1;
+    entry[0] += 1; // Matches played
+    entry[4] = 3 * entry[1] + entry[2]; // Score = 3 * wins + draws
 }
