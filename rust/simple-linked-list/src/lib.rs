@@ -46,7 +46,6 @@ impl<T> SimpleLinkedList<T> {
         self.head.as_ref().map(|node| &node.item)
     }
 
-    #[must_use]
     pub fn rev(self) -> Self {
         let mut rev_list = Self::new();
         let mut curr_node = self.head;
