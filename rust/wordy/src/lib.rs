@@ -1,6 +1,6 @@
 pub fn answer(command: &str) -> Option<i32> {
     let words: Vec<&str> = command
-        .strip_prefix("What is")?
+        .strip_prefix("What is ")?
         .strip_suffix('?')?
         .split_whitespace()
         .collect();
