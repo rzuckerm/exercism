@@ -14,12 +14,9 @@ impl<T: Clone> CircularBuffer<T> {
     }
 
     pub fn write(&mut self, element: T) -> Result<(), Error> {
-        if self.0.len() >= self.0.capacity() {
-            return Err(Error::FullBuffer);
-        }
-
-        self.0.push_back(element);
-        Ok(())
+        (self.0.len() < self.0.capacity())
+            .then(|| self.0.push_back(element))
+            .ok_or(Error::FullBuffer)
     }
 
     pub fn read(&mut self) -> Result<T, Error> {
@@ -31,10 +28,7 @@ impl<T: Clone> CircularBuffer<T> {
     }
 
     pub fn overwrite(&mut self, element: T) {
-        if self.0.len() >= self.0.capacity() {
-            let _ = self.read();
-        }
-
+        (self.0.len() >= self.0.capacity()).then(|| self.read());
         let _ = self.write(element);
     }
 }
