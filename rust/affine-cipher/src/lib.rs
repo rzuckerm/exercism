@@ -9,7 +9,7 @@ pub fn encode(plaintext: &str, a: i32, b: i32) -> Result<String, AffineCipherErr
     mmi(a)?;
     Ok(mutate_text::<Vec<char>>(plaintext, |x| a * x + b)
         .chunks(5)
-        .map(|ch| ch.iter().collect())
+        .map(String::from_iter)
         .collect::<Vec<String>>()
         .join(" "))
 }
