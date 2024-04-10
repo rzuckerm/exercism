@@ -1,60 +1,39 @@
 use std::collections::HashSet;
 
-// Euclid's formula:
+// sum = p = a + b + c
+// c = p - a - b
+// a^2 + b^2 = c^2
+// a^2 + b^2 = [p - (a + b)]^2
+// a^2 + b^2 = p^2 - 2*p*(a + b) + (a + b)^2
+// a^2 + b^2 = p^2 - 2*p*(a + b) + a^2 + 2*a*b + b^2
+// p^2 - 2*p*(a + b) + 2*a*b = 0
+// p^2 - 2*p*a - 2*p*b + 2*a*b = 0
+// p*(p - 2*a) = 2*b*(p - a)
+// b = [p*(p - 2*a)] / [2*(p - a)]
 //
-// a = (m^2 - n^2)*k
-// b = 2*m*n*k
-// c = (m^2 + n^2)*k
+// Find value of a that equals b:
 //
-// where:
-// - k, m, and n are positive integers
-// - m > n
-// - a < b < c
+// [p*(p - 2*a)] / [2*(p - a)] = a
+// p*(p - 2*a) = 2*a*(p - a)
+// p^2 - 2*p*a = 2*p*a - 2*a^2
+// p^2 - 4*p*a + 2*a^2 = 0
+//
+// a = [4*p +/- sqrt(16*p^2 - 4*2*p^2)] / (2*2)
+//   = [4*p +/- sqrt(8*p^2)] / 4
+//   = p*[1 +/- 1/sqrt(2)]
+//
+// Since a < p:
+//
+// a = p*[1 - 1/sqrt(2)]
+//
+// Therefore:
+//
+// a <= p*[1 - 1/sqrt(2)]
+//
+// The smallest Pythagorean Triplet is [3, 4, 5], so a >= 3
 pub fn find(sum: u32) -> HashSet<[u32; 3]> {
-    let mut result = HashSet::<[u32; 3]>::new();
-    for k in 1..=(sum / 12).max(1) { // Empirically determined
-        let lower_bound = pythagorean_lower_bound(k, sum);
-        let upper_bound = pythagorean_upper_bound(k, sum);
-        for m in lower_bound..=upper_bound {
-            if sum % (2 * k * m) == 0 {
-                let n = sum / (2 * k * m) - m;
-                let a = (m * m - n * n) * k;
-                let b = 2 * m * n * k;
-                result.insert([a.min(b), a.max(b), sum - a - b]);
-            }
-        }
-    }
-
-    result
-}
-
-// p = a + b + c
-//   = (m^2 - n^2)*k + 2*m*n*k + (m^2 + n^2)*k
-//   = 2*k*m^2 + 2*k*m*n
-// p/(2*k) = m^2 + m*n
-//         = m*(m + n)
-// m + n = p/(2*k*m)
-// n = p/(2*k*m) - m
-// p must be divisible by 2*k*m
-//
-// n > 0:
-//     p/(2*k*m) - m > 0
-//     p/(2*k*m) > m
-//     p/(2*k) > m^2
-//     m < sqrt[p/(2*k)]
-//
-// n < m:
-//     p/(2*k*m) - m < m
-//     p/(2*k*m) < 2*m
-//     p/(2*k) < 2*m^2
-//     p/(4*k) < m^2
-//     m > sqrt[p/(4*k)]
-fn pythagorean_lower_bound(k: u32, sum: u32) -> u32 {
-    let q = ((sum / (4 * k)) as f32).sqrt() as u32;
-    (sum < 4 * k * q * q).then_some(q).unwrap_or(q + 1)
-}
-
-fn pythagorean_upper_bound(k: u32, sum: u32) -> u32 {
-    let q = ((sum / (2 * k)) as f32).sqrt() as u32;
-    (sum > 2 * k * q * q).then_some(q).unwrap_or(q - 1)
+    (3..=(sum as f32 * (1.0 - 1.0 / 2.0f32.sqrt())) as u32)
+        .map(|a| (a, sum * (sum - 2 * a), 2 * (sum - a)))
+        .filter_map(|(a, n, d)| (n % d == 0).then_some([a, n / d, sum - a - n / d]))
+        .collect()
 }
