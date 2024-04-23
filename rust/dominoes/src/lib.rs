@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashSet};
+use std::collections::BTreeMap;
 
 type ChainKey = (usize, bool);
 
@@ -8,7 +8,17 @@ pub fn chain(input: &[(u8, u8)]) -> Option<Vec<(u8, u8)>> {
         1 => (input[0].0 == input[0].1).then_some(vec![input[0]]),
         _ => {
             let chainables = get_chainables(input)?;
-            find_first_chain(input, &chainables)
+            for &key in chainables.keys() {
+                let mut visited = vec![false; input.len()];
+                let mut output = Vec::<(u8, u8)>::new();
+                if let Some(chain) =
+                    find_first_chain_for_key(key, input, &chainables, &mut visited, &mut output)
+                {
+                    return Some(chain);
+                }
+            }
+
+            None
         }
     }
 }
@@ -16,8 +26,7 @@ pub fn chain(input: &[(u8, u8)]) -> Option<Vec<(u8, u8)>> {
 fn get_chainables(input: &[(u8, u8)]) -> Option<BTreeMap<ChainKey, Vec<ChainKey>>> {
     let mut chainables = BTreeMap::<ChainKey, Vec<ChainKey>>::new();
     for (i, &(first1, second1)) in input.iter().enumerate() {
-        let (mut first, mut second, mut forward) = (first1, second1, true);
-        loop {
+        for (second, forward) in [(second1, true), (first1, false)] {
             for (j, &(first2, second2)) in input.iter().enumerate() {
                 if i == j {
                     continue;
@@ -29,67 +38,41 @@ fn get_chainables(input: &[(u8, u8)]) -> Option<BTreeMap<ChainKey, Vec<ChainKey>
             }
 
             chainables.get(&(i, forward))?;
-            (first, second, forward) = (second, first, !forward);
-            if first == first1 {
-                break;
-            }
         }
     }
 
     Some(chainables)
 }
 
-#[derive(Debug, Default)]
-struct ChainMemory {
-    visited: HashSet<usize>,
-    keys: Vec<ChainKey>,
-    results: Vec<(u8, u8)>,
-}
-
-fn find_first_chain(
-    input: &[(u8, u8)],
-    chainables: &BTreeMap<ChainKey, Vec<ChainKey>>,
-) -> Option<Vec<(u8, u8)>> {
-    for &key in chainables.keys() {
-        let mut memory = ChainMemory::default();
-        if let Some(chain) = find_first_chain_for_key(key, input, chainables, &mut memory) {
-            return Some(chain);
-        }
-    }
-
-    None
-}
-
 fn find_first_chain_for_key(
     key: ChainKey,
     input: &[(u8, u8)],
     chainables: &BTreeMap<ChainKey, Vec<ChainKey>>,
-    memory: &mut ChainMemory,
+    visited: &mut Vec<bool>,
+    output: &mut Vec<(u8, u8)>,
 ) -> Option<Vec<(u8, u8)>> {
-    memory.visited.insert(key.0);
-    memory.keys.push(key);
+    visited[key.0] = true;
     match key.1 {
-        true => memory.results.push(input[key.0]),
-        false => memory.results.push((input[key.0].1, input[key.0].0)),
+        true => output.push(input[key.0]),
+        false => output.push((input[key.0].1, input[key.0].0)),
     }
 
-    if memory.results.len() == input.len() {
-        return (memory.results[0].0 == memory.results.last().unwrap().1)
-            .then_some(memory.results.clone());
+    if output.len() == input.len() {
+        return (output[0].0 == output.last().unwrap().1).then_some(output.clone());
     }
 
     for &next_key in &chainables[&key] {
-        if !memory.visited.contains(&next_key.0) {
-            if let Some(next_chain) = find_first_chain_for_key(next_key, input, chainables, memory)
+        if !visited[next_key.0] {
+            if let Some(next_output) =
+                find_first_chain_for_key(next_key, input, chainables, visited, output)
             {
-                return Some(next_chain);
+                return Some(next_output);
             }
         }
     }
 
-    memory.visited.remove(&key.0);
-    memory.keys.pop();
-    memory.results.pop();
+    visited[key.0] = false;
+    output.pop();
 
     None
 }
