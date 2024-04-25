@@ -4,15 +4,9 @@ pub fn chain(input: &[(u8, u8)]) -> Option<Vec<(u8, u8)>> {
         1 => (input[0].0 == input[0].1).then_some(vec![input[0]]),
         _ => {
             let chainables = get_chainables(input)?;
-            for key in 0..2 * input.len() {
-                let mut visited = vec![false; input.len()];
-                let mut output = Vec::<(u8, u8)>::new();
-                if find_first_chain_for_key(key, input, &chainables, &mut visited, &mut output) {
-                    return Some(output);
-                }
-            }
-
-            None
+            let mut visited = vec![false; input.len()];
+            let mut output = Vec::<(u8, u8)>::new();
+            find_first_chain(0, input, &chainables, &mut visited, &mut output).then_some(output)
         }
     }
 }
@@ -34,7 +28,7 @@ fn get_chainables(input: &[(u8, u8)]) -> Option<Vec<Vec<usize>>> {
     Some(chainables)
 }
 
-fn find_first_chain_for_key(
+fn find_first_chain(
     key: usize,
     input: &[(u8, u8)],
     chainables: &Vec<Vec<usize>>,
@@ -52,8 +46,7 @@ fn find_first_chain_for_key(
     }
 
     for next_key in chainables[key].clone() {
-        if !visited[next_key / 2]
-            && find_first_chain_for_key(next_key, input, chainables, visited, output)
+        if !visited[next_key / 2] && find_first_chain(next_key, input, chainables, visited, output)
         {
             return true;
         }
