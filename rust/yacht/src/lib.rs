@@ -24,14 +24,11 @@ pub fn score(dice: Dice, category: Category) -> u8 {
             && ((sd[0] == sd[1] && sd[2] == sd[4]) || (sd[0] == sd[2] && sd[3] == sd[4])))
             .then_some(dice.iter().sum()),
         Category::FourOfAKind => (sd[0] == sd[3] || sd[1] == sd[4]).then_some(4 * sd[1]),
-        Category::LittleStraight | Category::BigStraight => score_straight(&sd, category as u8 - 8),
+        Category::LittleStraight => (sd == [1, 2, 3, 4, 5]).then_some(30),
+        Category::BigStraight => (sd == [2, 3, 4, 5, 6]).then_some(30),
         Category::Choice => Some(dice.iter().sum()),
         Category::Yacht => (sd[0] == sd[4]).then_some(50),
         _ => Some(dice.iter().filter(|&&d| d == category as u8).sum()),
     }
     .unwrap_or(0)
-}
-
-fn score_straight(sd: &Dice, die: u8) -> Option<u8> {
-    (sd[0] == die && sd.windows(2).all(|w| w[1] == w[0] + 1)).then_some(30)
 }
