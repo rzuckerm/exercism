@@ -53,7 +53,10 @@ class BlackJackTest(unittest.TestCase):
 
         for variant, (card_one, card_two, expected) in enumerate(test_data, 1):
             with self.subTest(
-                f"variation #{variant}", card_one=card_one, card_two=card_two, expected=expected
+                f"variation #{variant}",
+                card_one=card_one,
+                card_two=card_two,
+                expected=expected,
             ):
                 actual_result = higher_card(card_one, card_two)
                 error_msg = (
@@ -83,7 +86,10 @@ class BlackJackTest(unittest.TestCase):
 
         for variant, (card_one, card_two, ace_value) in enumerate(test_data, 1):
             with self.subTest(
-                f"variation #{variant}", card_one=card_one, card_two=card_two, ace_value=ace_value
+                f"variation #{variant}",
+                card_one=card_one,
+                card_two=card_two,
+                ace_value=ace_value,
             ):
                 actual_result = value_of_ace(card_one, card_two)
                 error_msg = (
