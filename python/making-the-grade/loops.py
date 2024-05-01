@@ -48,7 +48,7 @@ def letter_grades(highest: int) -> list[int]:
             86 <= "A" <= 100
     """
 
-    return [41 + (highest - 40) * n // 4 for n in range(4)]
+    return [41 + (highest - 40) * index // 4 for index in range(4)]
 
 
 def student_ranking(student_scores: list[int], student_names: list[str]) -> list[str]:
@@ -60,8 +60,8 @@ def student_ranking(student_scores: list[int], student_names: list[str]) -> list
     """
 
     return [
-        f"{n + 1}. {name}: {score}"
-        for n, (name, score) in enumerate(zip(student_names, student_scores))
+        f"{rank + 1}. {name}: {score}"
+        for rank, (name, score) in enumerate(zip(student_names, student_scores))
     ]
 
 
