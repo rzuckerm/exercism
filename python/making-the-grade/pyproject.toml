@@ -5,4 +5,4 @@ line-length = 100
 markers = ["task"]
 
 [tool.pylint."MESSAGE_CONTROL"]
-ignore = ["C0301"]
+disable = ["C0301"]
