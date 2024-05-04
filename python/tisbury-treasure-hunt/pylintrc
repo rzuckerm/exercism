@@ -123,7 +123,7 @@ evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / stateme
 good-names=main,_
 
 # Bad variable names which should always be refused, separated by a comma
-bad-names=x,y,i,l
+bad-names=i,l
 
 # Colon-delimited sets of names that determine each other's naming style when
 # the name regexes allow several styles.
