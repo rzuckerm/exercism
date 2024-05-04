@@ -1,38 +1,15 @@
-""" Determine triangle types """
-
 NumberT = int | float
 
 
 def equilateral(sides: list[NumberT]) -> bool:
-    """
-    Indicate if equilateral triangle
-
-    :param sides: Triangle sides
-    :return: True if equilateral triange, False otherwise
-    """
-
     return _is_valid_triangle(sides) and len(set(sides)) == 1
 
 
-def isosceles(sides):
-    """
-    Indicate if isosceles triangle
-
-    :param sides: Triangle sides
-    :return: True if isosceles triange, False otherwise
-    """
-
+def isosceles(sides: list[NumberT]):
     return _is_valid_triangle(sides) and len(set(sides)) <= 2
 
 
-def scalene(sides):
-    """
-    Indicate if scalene triangle
-
-    :param sides: Triangle sides
-    :return: True if scalene triange, False otherwise
-    """
-
+def scalene(sides: list[NumberT]):
     return _is_valid_triangle(sides) and len(set(sides)) == 3
 
 
