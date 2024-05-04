@@ -92,7 +92,8 @@ disable=arguments-differ,
         unnecessary-pass,
         unused-argument,
         useless-suppression,
-        missing-module-docstring
+        missing-module-docstring,
+        missing-function-docstring
 
 
 [REPORTS]
