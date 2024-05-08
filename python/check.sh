@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-black .
+black -l 120 .
 pylint *.py
 pytest -vvl
 
