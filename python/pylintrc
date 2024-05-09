@@ -93,7 +93,8 @@ disable=arguments-differ,
         unused-argument,
         useless-suppression,
         missing-module-docstring,
-        missing-function-docstring
+        missing-function-docstring,
+        line-too-long
 
 
 [REPORTS]
