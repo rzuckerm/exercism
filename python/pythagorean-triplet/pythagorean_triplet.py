@@ -32,9 +32,9 @@
 
 
 def triplets_with_sum(number: int) -> list[list[int, int, int]]:
-    return [[a, n / d, number - a - n / d] for a, n, d in _triplet(number) if n % d == 0]
+    return [[a, n // d, number - a - n // d] for a, n, d in _triplet(number) if n % d == 0]
 
 
-def _triplet(number):
+def _triplet(number: int):
     for a in range(3, int(number * (1 - 1 / 2**0.5)) + 1):
         yield a, number * (number - 2 * a), 2 * (number - a)
