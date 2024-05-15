@@ -2,19 +2,11 @@ from collections import deque
 
 
 class BufferFullException(BufferError):
-    """Exception raised when CircularBuffer is full.
-
-    message: explanation of the error.
-
-    """
+    pass
 
 
 class BufferEmptyException(BufferError):
-    """Exception raised when CircularBuffer is empty.
-
-    message: explanation of the error.
-
-    """
+    pass
 
 
 class CircularBuffer:
@@ -22,7 +14,7 @@ class CircularBuffer:
         self.buffer = deque([], capacity)
 
     def read(self):
-        if len(self.buffer) == 0:
+        if not self.buffer:
             raise BufferEmptyException("Circular buffer is empty")
 
         return self.buffer.popleft()
