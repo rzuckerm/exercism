@@ -19,19 +19,26 @@ def create_entry(date: str, description: str, change: int) -> LedgerEntry:
     return LedgerEntry(date, description, change)
 
 
+class LedgerEntryFormatter:
+    def __init__(self, date_hdr: str, descr_hdr: str, change_hdr: str):
+        self.date_hdr = date_hdr
+        self.descr_hdr = descr_hdr
+        self.change_hdr = change_hdr
+
+    def header(self) -> str:
+        return f"{self.date_hdr:10} | {self.descr_hdr:25} | {self.change_hdr:13}"
+
+    def description(self, description: str) -> str:
+        return f"{description[:22]}..." if len(description) > 25 else description.ljust(25)
+
+
 def format_entries(currency: str, locale: str, entries: list[LedgerEntry]) -> str:
     table = ""
     if locale == "en_US":
+        formatter = LedgerEntryFormatter("Date", "Description", "Change")
+
         # Generate Header Row
-        table += "Date"
-        for _ in range(7):
-            table += " "
-        table += "| Description"
-        for _ in range(15):
-            table += " "
-        table += "| Change"
-        for _ in range(7):
-            table += " "
+        table += formatter.header()
 
         for entry in sorted(entries):
             table += "\n"
@@ -41,17 +48,7 @@ def format_entries(currency: str, locale: str, entries: list[LedgerEntry]) -> st
 
             # Write entry description to table
             # Truncate if necessary
-            if len(entry.description) > 25:
-                for i in range(22):
-                    table += entry.description[i]
-                table += "..."
-            else:
-                for i in range(25):
-                    if len(entry.description) > i:
-                        table += entry.description[i]
-                    else:
-                        table += " "
-            table += " | "
+            table += formatter.description(entry.description) + " | "
 
             # Write entry change to table
             if currency == "USD":
@@ -119,16 +116,10 @@ def format_entries(currency: str, locale: str, entries: list[LedgerEntry]) -> st
                     change_str = " " + change_str
                 table += change_str
     elif locale == "nl_NL":
+        formatter = LedgerEntryFormatter("Datum", "Omschrijving", "Verandering")
+
         # Generate Header Row
-        table += "Datum"
-        for _ in range(6):
-            table += " "
-        table += "| Omschrijving"
-        for _ in range(14):
-            table += " "
-        table += "| Verandering"
-        for _ in range(2):
-            table += " "
+        table += formatter.header()
 
         for entry in sorted(entries):
             table += "\n"
@@ -138,17 +129,7 @@ def format_entries(currency: str, locale: str, entries: list[LedgerEntry]) -> st
 
             # Write entry description to table
             # Truncate if necessary
-            if len(entry.description) > 25:
-                for i in range(22):
-                    table += entry.description[i]
-                table += "..."
-            else:
-                for i in range(25):
-                    if len(entry.description) > i:
-                        table += entry.description[i]
-                    else:
-                        table += " "
-            table += " | "
+            table += formatter.description(entry.description) + " | "
 
             # Write entry change to table
             if currency == "USD":
