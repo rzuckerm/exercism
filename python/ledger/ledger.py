@@ -31,6 +31,14 @@ class LedgerEntryFormatter:
     def description(self, description: str) -> str:
         return f"{description[:22]}..." if len(description) > 25 else description.ljust(25)
 
+    def change_en_us(self, curr_symbol: str, change: int) -> str:
+        change = change / 100
+        return (f"({curr_symbol}{-change:,.2f})" if change < 0 else f"{curr_symbol}{change:,.2f} ").rjust(13)
+
+    def change_nl_nl(self, curr_symbol: str, change: int) -> str:
+        change = change / 100
+        return f"{curr_symbol} {change:,.2f} ".replace(",", ":").replace(".", ",").replace(":", ".").rjust(13)
+
 
 def format_entries(currency: str, locale: str, entries: list[LedgerEntry]) -> str:
     table = ""
@@ -51,70 +59,7 @@ def format_entries(currency: str, locale: str, entries: list[LedgerEntry]) -> st
             table += formatter.description(entry.description) + " | "
 
             # Write entry change to table
-            if currency == "USD":
-                change_str = ""
-                if entry.change < 0:
-                    change_str = "("
-                change_str += "$"
-                change_dollar = abs(int(entry.change / 100.0))
-                dollar_parts = []
-                while change_dollar > 0:
-                    dollar_parts.insert(0, str(change_dollar % 1000))
-                    change_dollar = change_dollar // 1000
-                if len(dollar_parts) == 0:
-                    change_str += "0"
-                else:
-                    while True:
-                        change_str += dollar_parts[0]
-                        dollar_parts.pop(0)
-                        if len(dollar_parts) == 0:
-                            break
-                        change_str += ","
-                change_str += "."
-                change_cents = abs(entry.change) % 100
-                change_cents = str(change_cents)
-                if len(change_cents) < 2:
-                    change_cents = "0" + change_cents
-                change_str += change_cents
-                if entry.change < 0:
-                    change_str += ")"
-                else:
-                    change_str += " "
-                while len(change_str) < 13:
-                    change_str = " " + change_str
-                table += change_str
-            elif currency == "EUR":
-                change_str = ""
-                if entry.change < 0:
-                    change_str = "("
-                change_str += "€"
-                change_euro = abs(int(entry.change / 100.0))
-                euro_parts = []
-                while change_euro > 0:
-                    euro_parts.insert(0, str(change_euro % 1000))
-                    change_euro = change_euro // 1000
-                if len(euro_parts) == 0:
-                    change_str += "0"
-                else:
-                    while True:
-                        change_str += euro_parts[0]
-                        euro_parts.pop(0)
-                        if len(euro_parts) == 0:
-                            break
-                        change_str += ","
-                change_str += "."
-                change_cents = abs(entry.change) % 100
-                change_cents = str(change_cents)
-                if len(change_cents) < 2:
-                    change_cents = "0" + change_cents
-                change_str += change_cents
-                if entry.change < 0:
-                    change_str += ")"
-                else:
-                    change_str += " "
-                while len(change_str) < 13:
-                    change_str = " " + change_str
-                table += change_str
+            table += formatter.change_en_us("$" if currency == "USD" else "€", entry.change)
     elif locale == "nl_NL":
         formatter = LedgerEntryFormatter("Datum", "Omschrijving", "Verandering")
 
@@ -132,61 +77,6 @@ def format_entries(currency: str, locale: str, entries: list[LedgerEntry]) -> st
             table += formatter.description(entry.description) + " | "
 
             # Write entry change to table
-            if currency == "USD":
-                change_str = "$ "
-                if entry.change < 0:
-                    change_str += "-"
-                change_dollar = abs(int(entry.change / 100.0))
-                dollar_parts = []
-                while change_dollar > 0:
-                    dollar_parts.insert(0, str(change_dollar % 1000))
-                    change_dollar = change_dollar // 1000
-                if len(dollar_parts) == 0:
-                    change_str += "0"
-                else:
-                    while True:
-                        change_str += dollar_parts[0]
-                        dollar_parts.pop(0)
-                        if len(dollar_parts) == 0:
-                            break
-                        change_str += "."
-                change_str += ","
-                change_cents = abs(entry.change) % 100
-                change_cents = str(change_cents)
-                if len(change_cents) < 2:
-                    change_cents = "0" + change_cents
-                change_str += change_cents
-                change_str += " "
-                while len(change_str) < 13:
-                    change_str = " " + change_str
-                table += change_str
-            elif currency == "EUR":
-                change_str = "€ "
-                if entry.change < 0:
-                    change_str += "-"
-                change_euro = abs(int(entry.change / 100.0))
-                euro_parts = []
-                while change_euro > 0:
-                    euro_parts.insert(0, str(change_euro % 1000))
-                    change_euro = change_euro // 1000
-                if len(euro_parts) == 0:
-                    change_str += "0"
-                else:
-                    while True:
-                        change_str += euro_parts[0]
-                        euro_parts.pop(0)
-                        if len(euro_parts) == 0:
-                            break
-                        change_str += "."
-                change_str += ","
-                change_cents = abs(entry.change) % 100
-                change_cents = str(change_cents)
-                if len(change_cents) < 2:
-                    change_cents = "0" + change_cents
-                change_str += change_cents
-                change_str += " "
-                while len(change_str) < 13:
-                    change_str = " " + change_str
-                table += change_str
+            table += formatter.change_nl_nl("$" if currency == "USD" else "€", entry.change)
 
     return table
