@@ -1,40 +1,20 @@
 class BowlingGame:
     def __init__(self):
-        self.rolls: list[int] = []
-        self.frame = 0
-        self.roll_num = 0
-        self.left = 10
+        self.rolls, self.curr_frame, self.frame = [], [], 0
 
     def roll(self, pins: int):
         if self.frame >= 10:
             raise ValueError("game is over")
 
-        if pins < 0 or pins > self.left:
+        if pins < 0 or pins > 10 - sum(self.curr_frame) % 10:
             raise ValueError("invalid roll")
 
-        # Adjust number of pins left. Reset if all pins knocked down
-        self.left = 10 if self.left == pins or (self.roll_num == 2 and self.frame < 9) else self.left - pins
-
-        self.roll_num += 1
-        if self.roll_num == 1:
-            # First roll: Next frame if strike and not last frame
-            if self.frame < 9 and pins == 10:
-                self.roll_num = 0
-                self.frame += 1
-        elif self.roll_num == 2:
-            # Second roll: Next frame if not last frame and reset pins left
-            if self.frame < 9:
-                self.frame += 1
-                self.roll_num = 0
-                self.left = 10
-            # Game over if less than 10 pins in last frame
-            elif self.rolls[-1] + pins < 10:
-                self.frame += 1
-        else:
-            # Game over if third roll in last frame
-            self.frame += 1
-
         self.rolls.append(pins)
+        self.curr_frame.append(pins)
+        nr, total = len(self.curr_frame), sum(self.curr_frame)
+        if nr == 3 or (self.frame < 9 and (nr == 2 or total == 10)) or (self.frame >= 9 and nr == 2 and total < 10):
+            self.frame += 1
+            self.curr_frame = []
 
     def score(self) -> int:
         if self.frame < 10:
