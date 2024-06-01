@@ -1,12 +1,12 @@
-from dataclasses import dataclass
-
 DIRS = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
 
 
-@dataclass
 class Point:
-    x: int
-    y: int
+    def __init__(self, x: int, y: int):
+        self.x, self.y = x, y
+
+    def __eq__(self, other) -> bool:
+        return (self.x, self.y) == (other.x, other.y)
 
 
 class WordSearch:
