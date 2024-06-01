@@ -4,7 +4,7 @@ class Zipper:
 
     @staticmethod
     def from_tree(tree):
-        return Zipper(dict(tree))
+        return Zipper(tree)
 
     def value(self):
         return self.tree.get("value")
