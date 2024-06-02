@@ -2,31 +2,23 @@ DominoesT = list[tuple[int, int]]
 
 
 def can_chain(dominoes: DominoesT) -> DominoesT | None:
-    # If each domino has at least one other match, indicate solution if found,
-    # None otherwise
-    if chainables := _get_chainables(dominoes):
-        return _find_first_chain(0, dominoes, chainables, set(), [])
-
-    # Indicate match if no dominoes or a single domino with same number on both side,
-    # None otherwise
-    return dominoes if not dominoes or len(dominoes) == 1 and dominoes[0][0] == dominoes[0][1] else None
+    return _find_chain(0, dominoes, _get_chainables(dominoes), set(), []) if dominoes else []
 
 
-def _get_chainables(dominoes: DominoesT) -> DominoesT | None:
+def _get_chainables(dominoes: DominoesT) -> list[list[int]]:
     # Figure out which dominoes can be chained together and in which orientation
-    chainables = [[] for _ in range(2 * len(dominoes))]
-    for i, (first1, second1) in enumerate(dominoes):
-        for second, index in [(second1, 2 * i), (first1, 2 * i + 1)]:
-            for j, (first2, second2) in enumerate(dominoes):
-                if i != j and second in [first2, second2]:
-                    chainables[index].append(2 * j + int(second == second2))
+    chainables = [
+        [2 * j + int(s == s2) for j, (f2, s2) in enumerate(dominoes) if i != j and s in [f2, s2]]
+        for i, (f1, s1) in enumerate(dominoes)
+        for s in [s1, f1]
+    ]
 
-    # Return chainables if all dominoes have at least one match
-    return chainables if all(chainables) else None
+    # Return chainables if all dominoes have at least one match, else empty chainable
+    return chainables if all(chainables) else [[]]
 
 
-def _find_first_chain(
-    key: int, dominoes: DominoesT, chainables: DominoesT, visited: set[int], chain: DominoesT
+def _find_chain(
+    key: int, dominoes: DominoesT, chainables: list[list[int]], visited: set[int], chain: DominoesT
 ) -> DominoesT | None:
     # Indicate this domino has been tried
     index, first = key // 2, key % 2
@@ -41,9 +33,7 @@ def _find_first_chain(
 
     # Recursively try each domino that can be chained with this one
     for next_key in chainables[key]:
-        if next_key // 2 not in visited and (
-            next_chain := _find_first_chain(next_key, dominoes, chainables, visited, chain)
-        ):
+        if next_key // 2 not in visited and (next_chain := _find_chain(next_key, dominoes, chainables, visited, chain)):
             return next_chain
 
     # Remove this domino from the chain and indicate no match
