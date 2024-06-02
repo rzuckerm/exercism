@@ -21,11 +21,8 @@ def _get_chainables(dominoes: DominoesT) -> DominoesT | None:
                 if i != j and second in [first2, second2]:
                     chainables[index].append(2 * j + int(second == second2))
 
-            # Indicate no solution if any dominoes cannot be chained
-            if not chainables[index]:
-                return None
-
-    return chainables
+    # Return chainables if all dominoes have at least one match
+    return chainables if all(chainables) else None
 
 
 def _find_first_chain(
