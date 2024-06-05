@@ -1,7 +1,7 @@
 from itertools import permutations
 
 
-def solve(puzzle):
+def solve(puzzle: str) -> dict[str, int] | None:
     # Get words
     words = puzzle.replace("+", " ").replace("==", " ").split()
 
@@ -31,6 +31,11 @@ def solve(puzzle):
     # values for first letters and other letters. Stop when solution is found
     for first_values in permutations(range(1, 10), num_first_letters):
         candidates = [n for n in range(10) if n not in first_values]
+        if num_other_letters < 1:
+            solution = dict(zip(letters, first_values))
+            if sum(multipliers[ch] * v for ch, v in solution.items()) == 0:
+                return solution
+
         for other_values in permutations(candidates, num_other_letters):
             solution = dict(zip(letters, first_values + other_values))
             if sum(multipliers[ch] * v for ch, v in solution.items()) == 0:
