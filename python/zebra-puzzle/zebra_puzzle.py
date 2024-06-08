@@ -46,7 +46,7 @@ def owns_zebra() -> str:
 
 
 def _solve(category_index: int, target: int) -> str:
-    # Start with knows and try known combinations
+    # Start with knowns and try known combinations
     found = False
     for n, (item_idx1, item1), (item_idx2, item2) in KNOWN_COMBOS:
         solution = [vals.copy() for vals in KNOWNS]
