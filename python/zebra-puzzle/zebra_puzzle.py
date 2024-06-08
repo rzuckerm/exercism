@@ -30,15 +30,10 @@ KNOWN_COMBOS = [
 # Constraints for solution
 CONSTRAINTS = [
     lambda items, c: items[NATION_IDX][c] == SPANIARD and items[PET_IDX][c] == DOG,
-    lambda items, c: items[DRINK_IDX][c] == TEA and items[NATION_IDX][c] == UKRANIAN,
-    lambda items, c: items[SMOKE_IDX][c] == PARLIAMENT and items[NATION_IDX][c] == JAPANESE,
-    lambda items, c: items[NATION_IDX][c] == SPANIARD and items[PET_IDX][c] == DOG,
-    lambda items, c: items[SMOKE_IDX][c] == OLD_GOLD and items[PET_IDX][c] == SNAILS,
+    lambda items, c: items[NATION_IDX][c] == JAPANESE and items[SMOKE_IDX][c] == PARLIAMENT,
     lambda items, c: items[NATION_IDX][c] == UKRANIAN and items[DRINK_IDX][c] == TEA,
-    lambda items, c: items[SMOKE_IDX][c] == LUCKY_STRIKE and items[DRINK_IDX][c] == ORANGE_JUICE,
     lambda items, c: items[PET_IDX][c] == SNAILS and items[SMOKE_IDX][c] == OLD_GOLD,
     lambda items, c: items[DRINK_IDX][c] == ORANGE_JUICE and items[SMOKE_IDX][c] == LUCKY_STRIKE,
-    lambda items, c: items[NATION_IDX][c] == JAPANESE and items[SMOKE_IDX][c] == PARLIAMENT,
 ]
 
 
