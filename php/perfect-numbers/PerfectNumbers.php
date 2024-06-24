@@ -8,11 +8,10 @@ function getClassification(int $number): string
         throw new \InvalidArgumentException("Classification is only possible for positive integers.");
     }
 
-    $q = (int) sqrt($number);
     $factors = [];
-    for ($i = 1; $i <= $q; $i++) {
+    for ($i = 1; $i * $i <= $number; $i++) {
         if ($number % $i == 0) {
-            array_push($factors, $i, (int)($number / $i));
+            array_push($factors, $i, (int) ($number / $i));
         }
     }
 
