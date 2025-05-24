@@ -22,8 +22,7 @@ Function Invoke-CryptoSquare() {
     )
 
     $cleanText = $PlainText.ToLower() -replace '[^a-z\d]', ""
-    $len = $cleanText.Length
-    $q = [Math]::Sqrt($len)
+    $q = [Math]::Sqrt($cleanText.Length)
     $r, $c = [Math]::Round($q), [Math]::Ceiling($q)
     @(for ($i = 0; $i -lt $c; $i++) {
         -join @(for ($j = 0; $j -lt $r; $j++) { $cleanText[$j * $c + $i] ?? " " })}
