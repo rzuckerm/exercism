@@ -34,10 +34,10 @@ Function Get-Annotate() {
     for ($r = 0; $r -lt $board.Length; $r++) {
         for ($c = 0; $c -lt $board[$r].Length; $c++) {
             if ($board[$r][$c] -eq '*') { continue }
-            $count = (0..($Global:Dirs.Length - 1) | Where-Object {
-                $r2, $c2 = ($r + $Global:Dirs[$_][0]), ($c + $Global:Dirs[$_][1])
-                $r2 -ge 0 -and $c2 -ge 0 -and ($board[$r2] ?? @())[$c2] -eq '*'
-            }).Length
+            $count = ($Global:Dirs | ForEach-Object {
+                $r2, $c2 = ($r + $_[0]), ($c + $_[1])
+                [int]($r2 -ge 0 -and $c2 -ge 0 -and ($board[$r2] ?? @())[$c2] -eq '*')
+            } | Measure-Object -Sum).Sum
             if ($count) { $board[$r][$c] = [string]($count) }
         }
     }
