@@ -36,7 +36,7 @@ Function Get-Annotate() {
             if ($board[$r][$c] -eq '*') { continue }
             $count = ($Global:Dirs | ForEach-Object {
                 $r2, $c2 = ($r + $_[0]), ($c + $_[1])
-                [int]($r2 -ge 0 -and $c2 -ge 0 -and ($board[$r2] ?? @())[$c2] -eq '*')
+                [int]($r2 -ge 0 -and $c2 -ge 0 -and $board[$r2]?[$c2] -eq '*')
             } | Measure-Object -Sum).Sum
             if ($count) { $board[$r][$c] = [string]($count) }
         }
