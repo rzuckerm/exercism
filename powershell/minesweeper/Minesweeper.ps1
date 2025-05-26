@@ -30,7 +30,7 @@ Function Get-Annotate() {
 
     if ((-join $Minefield) -match "[^ *]") { throw "Invalid minefield" }
 
-    for (($board = @()), ($r = 0); $r -lt $Minefield.Length; $r++) { $board += @(,$Minefield[$r].ToCharArray()) }
+    $board = @($Minefield | ForEach-Object { @(, $_.ToCharArray() )})
     for ($r = 0; $r -lt $board.Length; $r++) {
         for ($c = 0; $c -lt $board[$r].Length; $c++) {
             if ($board[$r][$c] -eq '*') { continue }
