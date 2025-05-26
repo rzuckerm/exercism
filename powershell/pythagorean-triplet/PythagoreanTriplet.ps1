@@ -64,7 +64,7 @@ Function Get-PythagoreanTriplet() {
         $den = 2 * ($Sum - $a)
         if ($num % $den -eq 0) {
             $b = [Math]::Floor($num / $den)
-            $triplets += ,@($a, $b, [int]($Sum - $a - $b))
+            $triplets += ,@($a, $b, ($Sum - $a - $b))
         }
     }
 
