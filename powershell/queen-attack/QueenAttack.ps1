@@ -62,8 +62,7 @@ Class ChessBoard {
     }
 
     [string[][]] DrawBoard() {
-        $row = @("_") * 8
-        $board = 0..7 | ForEach-Object { ,$row.Clone() }
+        $board = 0..7 | ForEach-Object { ,(@("_") * 8) }
         $board[$this.White[0]][$this.White[1]] = "W"
         $board[$this.Black[0]][$this.Black[1]] = "B"
         return ($board | ForEach-Object { $_ -join " " }) -join "`r`n"
