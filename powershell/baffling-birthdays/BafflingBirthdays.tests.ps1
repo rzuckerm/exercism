@@ -139,7 +139,7 @@ Describe "BafflingBirthdays test cases" {
 
     Context "estimated probability" {
         BeforeAll {
-            $tolerance = 5
+            $tolerance = 2
             function Test-Probability($Probability, $Expected, $Tolerance) {
                 ($Probability -ge $Expected - $Tolerance) -and ($Probability -le $Expected + $Tolerance)
             }
