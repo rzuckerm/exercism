@@ -17,7 +17,10 @@ Function Invoke-BafflingBirthdays {
         [int]$People
     )
 
-    100 * (1..5000 | ForEach-Object { Test-SharedBirthday (Get-RandomBirthdates $People) } | Measure-Object -Average).Average
+    $count = 0
+    $runs = 5000
+    for ($i = 0; $i -lt $runs; $i++) { $count += Test-SharedBirthday (Get-RandomBirthdates $People) }
+    return 100.0 * $count / $runs
 }
 
 Function Get-RandomBirthdates {
@@ -50,9 +53,9 @@ Function Test-SharedBirthday {
         [DateTime[]]$Birthdates
     )
 
-    for ($i = 0; $i -lt $BirthDates.Length - 1; $i++) {
-        for ($j = $i + 1; $j -lt $BirthDates.Length; $j++) {
-            if ($BirthDates[$i].Month -eq $BirthDates[$j].Month -and $BirthDates[$i].Day -eq $BirthDates[$j].Day) {
+    for ($i = 0; $i -lt $Birthdates.Length - 1; $i++) {
+        for ($j = $i + 1; $j -lt $Birthdates.Length; $j++) {
+            if ($Birthdates[$i].Month -eq $Birthdates[$j].Month -and $Birthdates[$i].Day -eq $Birthdates[$j].Day) {
                 return $true
             }
         }
