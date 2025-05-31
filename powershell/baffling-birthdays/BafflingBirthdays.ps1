@@ -55,7 +55,7 @@ Function Test-SharedBirthday {
 
     for ($i = 0; $i -lt $Birthdates.Length - 1; $i++) {
         for ($j = $i + 1; $j -lt $Birthdates.Length; $j++) {
-            if ($Birthdates[$i].Month -eq $Birthdates[$j].Month -and $Birthdates[$i].Day -eq $Birthdates[$j].Day) {
+            if ($Birthdates[$i].DayOfYear -eq $Birthdates[$j].DayOfYear) {
                 return $true
             }
         }
