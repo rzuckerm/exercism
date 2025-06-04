@@ -52,7 +52,7 @@ Function Get-Chainables($dominoes) {
 Function Test-Chain($key, $dominoes, $chainables, $visited, $chain) {
     # Indicate this domino has been tried
     $index, $first = @(($key -shr 1), ($key -band 1))
-    $_dummy = $visited.Add($index)
+    [void]$visited.Add($index)
 
     # Append domino in desired orientation to chain
     $chain.Add(@($dominoes[$index][$first], $dominoes[$index][1 - $first]))
@@ -68,7 +68,7 @@ Function Test-Chain($key, $dominoes, $chainables, $visited, $chain) {
     }
 
     # Remove this domino from the chain and indicate no match
-    $_dummy = $visited.Remove($index)
+    [void]$visited.Remove($index)
     $chain.RemoveAt($chain.Count -1)
     $false
 }
