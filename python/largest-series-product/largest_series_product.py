@@ -3,7 +3,7 @@ from functools import reduce
 
 def largest_product(series: str, size: int) -> int:
     if size > len(series):
-        raise ValueError("span must be smaller than string length")
+        raise ValueError("span must not exceed string length")
 
     if size < 0:
         raise ValueError("span must not be negative")
