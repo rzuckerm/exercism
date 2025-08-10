@@ -1,15 +1,8 @@
 #pragma once
 
-namespace complex_numbers
-{
-class Complex
-{
-    Complex friend operator+(double lhs, const Complex &rhs);
-    Complex friend operator-(double lhs, const Complex &rhs);
-    Complex friend operator*(double lhs, const Complex &rhs);
-    Complex friend operator/(double lhs, const Complex &rhs);
-
-  public:
+namespace complex_numbers {
+class Complex {
+   public:
     Complex(double real, double imag);
     double real() const;
     double imag() const;
@@ -25,8 +18,13 @@ class Complex
     Complex conj() const;
     Complex exp() const;
 
-  private:
+   private:
     double re;
     double im;
 };
-} // namespace complex_numbers
+
+Complex operator+(double lhs, const Complex &rhs);
+Complex operator-(double lhs, const Complex &rhs);
+Complex operator*(double lhs, const Complex &rhs);
+Complex operator/(double lhs, const Complex &rhs);
+}  // namespace complex_numbers
