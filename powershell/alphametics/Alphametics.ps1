@@ -38,15 +38,17 @@ function Invoke-Alphametics {
         $_.ToCharArray()[($_.Length - 1)..0] |
             ForEach-Object { $multipliers["$_"] += [int]($multiplier * [Math]::pow(10, $k++)) }
     }
+    $firstMultipliers = @($firstLetters | ForEach-Object { $multipliers["$_"] })
+    $otherMultipliers = @($otherLetters | ForEach-Object { $multipliers["$_"] })
 
     # First letters can be 1-9; all other letters can be 0-9. Try all possible
     # values for first letters and other letters. Stop when solution is found
     foreach ($firstValues in Get-Permutations @(1..9) $nFirst) {
-        $firstAns = Get-Answer $firstLetters $firstValues $multipliers
+        $firstAns = Get-Answer $firstValues $firstMultipliers
         if ($nOther -lt 1 -and $firstAns -eq 0 ) { return Get-Solution $firstLetters $firstValues }
         $candidates = @(@(0..9) | Where-Object { $_ -notin $firstValues })
         foreach ($otherValues in Get-Permutations $candidates $nOther) {
-            $ans = $firstAns + (Get-Answer $otherLetters $otherValues $multipliers)
+            $ans = $firstAns + (Get-Answer $otherValues $otherMultipliers)
             if ($ans -eq 0) { return Get-Solution $letters ($firstValues + $otherValues) }
         }
     }
@@ -83,10 +85,10 @@ function Get-Permutations($pool, $r) {
     } while (!$done)
 }
 
-function Get-Answer($letters, $values, $multipliers) {
+function Get-Answer($values, $multipliers) {
     $ans = 0
     $n = 0
-    $letters | ForEach-Object { $ans += $multipliers["$_"] * $values[$n++] }
+    $values | ForEach-Object { $ans += $multipliers[$n++] * $_ }
     $ans
 }
 
