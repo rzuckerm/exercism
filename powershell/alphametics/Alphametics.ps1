@@ -43,10 +43,11 @@ function Invoke-Alphametics {
 
     # First letters can be 1-9; all other letters can be 0-9. Try all possible
     # values for first letters and other letters. Stop when solution is found
+    $candidatePool = 0..9
     foreach ($firstValues in Get-Permutations @(1..9) $nFirst) {
         $firstAns = Get-Answer $firstValues $firstMultipliers
         if ($nOther -lt 1 -and $firstAns -eq 0 ) { return Get-Solution $firstLetters $firstValues }
-        $candidates = @(@(0..9) | Where-Object { $_ -notin $firstValues })
+        $candidates = @($candidatePool | Where-Object { $_ -notin $firstValues })
         foreach ($otherValues in Get-Permutations $candidates $nOther) {
             $ans = $firstAns + (Get-Answer $otherValues $otherMultipliers)
             if ($ans -eq 0) { return Get-Solution $letters ($firstValues + $otherValues) }
@@ -88,7 +89,7 @@ function Get-Permutations($pool, $r) {
 function Get-Answer($values, $multipliers) {
     $ans = 0
     $n = 0
-    $values | ForEach-Object { $ans += $multipliers[$n++] * $_ }
+    foreach ($value in $values) { $ans += $value * $multipliers[$n++] }
     $ans
 }
 
