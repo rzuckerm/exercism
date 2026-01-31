@@ -6,10 +6,10 @@ class RelativeDistance:
         # Convert family tree into an undirected graph
         self.relatives = defaultdict(set)
         for parent, children in family_tree.items():
-            # Connect parent and children
+            # Connect parent to children
             self.relatives[parent].update(children)
 
-            # Connect siblings
+            # Connect siblings and connect parent to sibling
             children_set = set(children)
             for sibling in children:
                 self.relatives[sibling].add(parent)
@@ -29,9 +29,7 @@ class RelativeDistance:
             if person == person_b:
                 return distance
 
-            for relative in self.relatives[person]:
-                if not relative in visited:
-                    visited.add(relative)
-                    queue.append((relative, distance + 1))
+            visited.update(unvisited := self.relatives[person] - visited)
+            queue.extend((relative, distance + 1) for relative in unvisited)
 
         raise ValueError("No connection between person A and person B.")
