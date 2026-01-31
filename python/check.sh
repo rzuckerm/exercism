@@ -9,5 +9,5 @@ else
     pylint --rcfile ../pylintrc *.py
 fi
 
-pytest -vvl
+pytest -vvl "${@}"
 
