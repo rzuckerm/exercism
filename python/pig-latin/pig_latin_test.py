@@ -1,6 +1,6 @@
 # These tests are auto-generated with test data from:
 # https://github.com/exercism/problem-specifications/tree/main/exercises/pig-latin/canonical-data.json
-# File last updated on 2023-07-19
+# File last updated on 2026-02-19
 
 import unittest
 
@@ -10,6 +10,7 @@ from pig_latin import (
 
 
 class PigLatinTest(unittest.TestCase):
+
     def test_word_beginning_with_a(self):
         self.assertEqual(translate("apple"), "appleay")
 
@@ -39,6 +40,9 @@ class PigLatinTest(unittest.TestCase):
 
     def test_word_beginning_with_q_without_a_following_u(self):
         self.assertEqual(translate("qat"), "atqay")
+
+    def test_word_beginning_with_consonant_and_vowel_containing_qu(self):
+        self.assertEqual(translate("liquid"), "iquidlay")
 
     def test_word_beginning_with_ch(self):
         self.assertEqual(translate("chair"), "airchay")
