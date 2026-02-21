@@ -1,6 +1,6 @@
 # These tests are auto-generated with test data from:
 # https://github.com/exercism/problem-specifications/tree/main/exercises/alphametics/canonical-data.json
-# File last updated on 2023-07-20
+# File last updated on 2026-02-19
 
 import unittest
 
@@ -10,6 +10,7 @@ from alphametics import (
 
 
 class AlphameticsTest(unittest.TestCase):
+
     def test_puzzle_with_three_letters(self):
         self.assertEqual(solve("I + BB == ILL"), {"I": 1, "B": 9, "L": 0})
 
@@ -64,7 +65,7 @@ class AlphameticsTest(unittest.TestCase):
         )
 
     # See https://github.com/exercism/python/pull/1358
-    # @unittest.skip("extra-credit")
+    @unittest.skip("extra-credit")
     def test_puzzle_with_ten_letters_and_199_addends(self):
         """This test may take a long time to run. Please be patient when running it."""
         puzzle = (
